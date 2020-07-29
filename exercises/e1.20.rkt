@@ -10,10 +10,19 @@
 (gcd 206 40)
 ;; normal order:
 ;; (gcd 206 40)
-;; (gcd 40 (remainder 206 40))
-;; (gcd (remainder 206 40) (remainder 40 (remainder 206 40)))
-;; (gcd (remainder 40 (remainder 206 40)) (remainder (remainder 206 40) (remainder 40 (remainder 206 40))))
-;; AFAICT this just keeps shuffling around forever; part of normal order evaluation is that you continue to "fully expand" until there's only primitive operators, and then you "reduce", but the second branch of gcd involves invoking gcd again on b and remainder, but if we always have gcd, and don't evaluate remainder until we only have primitive operators, then we never evaluate remainder, and thus also never get to take the other branch.
+;;  if...
+;;  (remainder 206 40)
+;;  if...
+;;  (remainder 40 (remainder 206 40))
+;;  if...
+;;  (remainder (remainder 206 40) (remainder 40 (remainder 206 40)))
+;;  if...
+;;  (remainder (remainder 40 (remainder 206 40)) (remainder (remainder 206 40) (remainder 40 (remainder 206 40))))
+;; (remainder (remainder 206 40) (remainder 40 (remainder 206 40)))
+;; remainder is called 18 times.
+;; 14 executions evaluated as part of if's and 4 as part of the reduction 
+;; i thought that this never terminated, but it's just because I misunderstood how to handle the 'if' special form.
+;; it does terminate; just takes a while doing a ton of redundant remainder operations as part of handling the if's
 ;; applicative order:
 ;; (gcd 206 40)
 ;; (gcd 40 (remainder 206 40))
