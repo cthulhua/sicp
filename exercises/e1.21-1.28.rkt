@@ -320,5 +320,35 @@ this does look like logarithmic growth tho!
 > (map exhaustive-fast-prime? '(561 1105 1729 2465 2821 6601))
 '(#t #t #t #t #t #t)
 cool! we are fooled
-#|
+|#
 
+;;exercise 1.28
+(define (square n) (expt n 2))  
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (define candidate (square (expmod base (/ exp 2) m)))
+         (display candidate)
+         (cond ((nontrivial-root? candidate (+ exp 1)) 0)
+               (else (remainder candidate m))))
+        (else
+         (remainder (* base (expmod base (- exp 1) m))
+                    m))))        
+
+(define (nontrivial-root? m n)
+ (cond ((= m 1) false)
+       ((= m (- n 1) false))
+       ((= (square m) (remainder 1 n)) true)
+       (else false))
+)
+
+(define (miller-rabin n)
+  (define (try-it a)
+    (= (expmod a (- n 1) n) a))
+  (try-it (+ 1 (random (- n 1)))))
+
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+        ((miller-rabin n) (fast-prime? n (- times 1)))
+        (else false)))
